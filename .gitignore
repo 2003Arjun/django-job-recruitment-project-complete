@@ -1,0 +1,7 @@
+.env
+venv
+.history/
+__pycache__/
+.vscode/
+*.sqlite3
+media/

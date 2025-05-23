@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ job_advert.title }} - Job Details {% endblock %}
+
+{% block content %}
+
+{% include 'header.html' %}
+<section class="detail-page">
+  <div class="detail-container">
+    <div class="job-detail">
+      <h2>{{ job_advert.title }}</h2>
+      <p><strong>Company:</strong> {{ job_advert.company_name }}</p>
+      <p><strong>Employment Type:</strong> {{ job_advert.job_type }}</p>
+      <p><strong>Location:</strong> {{ job_advert.location }}</p>
+      <p><strong>Experience Level:</strong> {{ job_advert.experience_level }}</p>
+      <p><strong>Skills:</strong> {{ job_advert.skills }}</p>
+      <p><strong>Description:</strong></p>
+      <p>{{ job_advert.description }}</p>
+      <p><strong>Application Deadline:</strong> {{ job_advert.deadline }}</p>
+      <p><strong>Posted:</strong> {{ job_advert.created_at | timesince }} ago</p>
+    </div>
+    <div class="application-form">
+      <h3>Apply for this Position</h3>
+      <form action="{% url 'apply_for_job' job_advert.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{application_form.as_p}}
+        <button type="submit" class="btn">Submit Application</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}

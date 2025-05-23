@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ job_advert.title }} - Applications {% endblock %}
+
+{% block content %}
+
+{% include 'header.html' %}
+
+<div class="container">
+    <h2 style="text-align: center; color: #3a86ff; margin: 30px 0 20px; font-size: 28px; font-weight: 700;">
+        Applications for: {{ job_advert.title }}
+    </h2>
+    
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Portfolio</th>
+                    <th scope="col">CV</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">View Advert</th>
+                    <th scope="col">Date Applied</th>
+                    <th scope="col">Update Status</th>
+                </tr>
+            </thead>
+            <tbody>
+              
+                {% for application in applications %}
+                    <tr>
+                        <td>{{ application.name }}</td>
+                        <td>{{ application.email }}</td>
+                        <td>
+                            {% if application.portfolio_url %}
+                                <a href="{{ application.portfolio_url }}" target="_blank" style="color: #3a86ff; text-decoration: none; font-weight: 500;">View Portfolio</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ application.cv.url }}" target="_blank" style="color: #3a86ff; text-decoration: none; font-weight: 500;">
+                                Download CV
+                            </a>
+                        </td>
+                        <td>
+                            <span style="
+                                display: inline-block;
+                                padding: 5px 10px;
+                                border-radius: 20px;
+                                font-size: 12px;
+                                font-weight: 600;
+                                {% if application.status == 'APPLIED' %}
+                                    background-color: #ffd166;
+                                    color: #333;
+                                {% elif application.status == 'INTERVIEW' %}
+                                    background-color: #06d6a0;
+                                    color: white;
+                                {% elif application.status == 'REJECTED' %}
+                                    background-color: #ef476f;
+                                    color: white;
+                                {% else %}
+                                    background-color: #dee2e6;
+                                    color: #2b2d42;
+                                {% endif %}
+                            ">
+                                {{ application.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'job_advert' application.job_advert.id  %}" target="_blank" class="small-btn" style="background-color: #8338ec;">
+                                View Job
+                            </a>
+                        </td>
+                        <td>{{ application.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'decide' application.id %}" style="display: flex; gap: 5px;">
+                                {% csrf_token %}
+                                <select name="status" style="
+                                    padding: 8px;
+                                    border-radius: 6px;
+                                    border: 1px solid #dee2e6;
+                                    background-color: white;
+                                    font-size: 14px;
+                                    {% if application.status != 'APPLIED' %} 
+                                        opacity: 0.6; 
+                                    {% endif %}"
+                                    {% if application.status != 'APPLIED' %} disabled {% endif %}
+                                >
+                                    <option value='APPLIED' {% if application.status == 'APPLIED' %} selected {% endif %}>APPLIED</option>
+                                    <option value='REJECTED' {% if application.status == 'REJECTED' %} selected {% endif %}>REJECTED</option>
+                                    <option value='INTERVIEW' {% if application.status == 'INTERVIEW' %} selected {% endif %}>INTERVIEW</option>
+                                </select>
+                                <button class="small-btn" type="submit" style="
+                                    {% if application.status != 'APPLIED' %} 
+                                        opacity: 0.6; 
+                                        cursor: not-allowed;
+                                    {% endif %}"
+                                    {% if application.status != 'APPLIED' %} disabled {% endif %}
+                                >
+                                    Update
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 30px;">
+                        <p style="margin-bottom: 10px; font-size: 16px;">No applications received for this job listing yet.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<section class="container">
+    <div class="pagination">
+        <div class="step-links">
+            {% if applications.has_previous %}
+            <a class="pagination-link"
+                href="?page={{ applications.previous_page_number }}{% if request.GET.keyword %}&keyword={{ request.GET.keyword }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">«
+                Previous</a>
+            {% else %}
+            <span class="pagination-disabled">« Previous</span>
+            {% endif %}
+
+            <span class="pagination-current">
+                Page {{ applications.number }} of {{ applications.paginator.num_pages }}
+            </span>
+
+            {% if applications.has_next %}
+            <a class="pagination-link"
+                href="?page={{ applications.next_page_number }}{% if request.GET.keyword %}&keyword={{ request.GET.keyword }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">Next
+                »</a>
+            {% else %}
+            <span class="pagination-disabled">Next »</span>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}

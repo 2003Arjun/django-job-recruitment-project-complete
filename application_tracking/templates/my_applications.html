@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %} My Applications {% endblock %}
+
+{% block content %}
+{% include 'header.html' %}
+<div class="container">
+    <h2 style="text-align: center; color: #3a86ff; margin: 30px 0 20px; font-size: 28px; font-weight: 700;">My Job Applications</h2>
+    
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Portfolio</th>
+                    <th scope="col">CV</th>
+                    <th scope="col">Job Advert</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Date Posted</th>
+                    <th scope="col">Date Applied</th>
+                    <th scope="col">Total Applicants</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if my_applications %}
+                {% for application in my_applications %}
+                <tr>
+                    <td>{{ application.name }}</td>
+                    <td>{{ application.email }}</td>
+                    <td>
+                        {% if application.portfolio_url %}
+                            <a href="{{ application.portfolio_url }}" target="_blank" style="color: #3a86ff; text-decoration: none; font-weight: 500;">View Portfolio</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ application.cv.url }}" target="_blank" style="color: #3a86ff; text-decoration: none; font-weight: 500;">
+                            Download CV
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'job_advert' application.job_advert.id %}" target="_blank" style="color: #3a86ff; text-decoration: none; font-weight: 500;">
+                            {{ application.job_advert.title }}
+                        </a>
+                    </td>
+                    <td>
+                        <span style="
+                            display: inline-block;
+                            padding: 5px 10px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            {% if application.status == 'PENDING' %}
+                                background-color: #ffd166;
+                                color: #333;
+                            {% elif application.status == 'ACCEPTED' %}
+                                background-color: #06d6a0;
+                                color: white;
+                            {% elif application.status == 'REJECTED' %}
+                                background-color: #ef476f;
+                                color: white;
+                            {% else %}
+                                background-color: #dee2e6;
+                                color: #2b2d42;
+                            {% endif %}
+                        ">
+                            {{ application.status }}
+                        </span>
+                    </td>
+                    <td>{{ application.job_advert.created_at|date:"M d, Y" }}</td>
+                    <td>{{ application.created_at|date:"M d, Y" }}</td>
+                    <td>{{application.job_advert.total_applicants}}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 30px;">
+                        <p style="margin-bottom: 10px; font-size: 16px;">You haven't applied for any jobs yet.</p>
+                        <a href="{% url 'home' %}" style="color: #3a86ff; text-decoration: none; font-weight: 600;">Browse available jobs</a>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<section class="container">
+    <div class="pagination">
+        <div class="step-links">
+            {% if my_applications.has_previous %}
+            <a class="pagination-link"
+                href="?page={{ my_applications.previous_page_number }}{% if request.GET.keyword %}&keyword={{ request.GET.keyword }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">«
+                Previous</a>
+            {% else %}
+            <span class="pagination-disabled">« Previous</span>
+            {% endif %}
+
+            <span class="pagination-current">
+                Page {{ my_applications.number }} of {{ my_applications.paginator.num_pages }}
+            </span>
+
+            {% if my_applications.has_next %}
+            <a class="pagination-link"
+                href="?page={{ my_applications.next_page_number }}{% if request.GET.keyword %}&keyword={{ request.GET.keyword }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">Next
+                »</a>
+            {% else %}
+            <span class="pagination-disabled">Next »</span>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}

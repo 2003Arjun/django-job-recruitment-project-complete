@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+
+{% include 'header.html' %}
+
+<section class="detail-page">
+  <div class="detail-container container">
+    <div class="job-detail" style="max-width: 800px; margin: 0 auto;">
+      <h2 style="text-align: center; margin-bottom: 30px;">{{ title }}</h2>
+      
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div style="display: grid; gap: 20px;">
+          {% for field in job_advert_form %}
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <label for="{{ field.id_for_label }}" style="font-weight: 600; color: var(--dark);">
+                {{ field.label }}
+                {% if field.field.required %}
+                  <span style="color: var(--error);">*</span>
+                {% endif %}
+              </label>
+              
+              {{ field }}
+              
+              {% if field.help_text %}
+                <small style="color: #6c757d; font-size: 0.875em;">{{ field.help_text }}</small>
+              {% endif %}
+              
+              {% if field.errors %}
+                <div style="color: var(--error); font-size: 0.875em; margin-top: 5px;">
+                  {{ field.errors }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+        
+        <button type="submit" class="btn" style="margin-top: 30px; width: 100%;">{{ btn_text }}</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}

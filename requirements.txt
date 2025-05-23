@@ -1,0 +1,10 @@
+Django==5.1.4
+celery==5.4.0
+django-redis==5.4.0
+factory_boy==3.3.1
+Faker==33.3.1
+flower==2.0.1
+pytest==8.3.4
+pytest-django==4.9.0
+pytest-factoryboy==2.7.0
+python-decouple==3.8

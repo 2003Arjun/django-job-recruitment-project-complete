@@ -1,0 +1,18 @@
+<section class="homepage-header">
+  <div class="homepage-header-buttons">
+      {% if user.is_authenticated %}
+          <a href="{% url 'create_advert' %}">Create Advert</a>
+          <a href="{% url 'my_jobs' %}">My Jobs</a>
+          <a href="{% url 'my_applications' %}">My Applications</a>
+          <a href="{% url 'logout' %}">Logout</a>
+      {% else %}                                                                            
+          <a href="{% url 'login' %}">Login</a>
+          <a href="{% url 'register' %}">Register</a>
+      {% endif %}
+  </div>
+  <h1>Find Your Dream Job <a style="color: #ffd166; text-decoration: none; text-shadow: none;" href="/">🏠</a></h1> 
+  <p>The swift way to hire, the smart way to find opportunities.</p>
+  <div style="display: flex; align-items: center; justify-content: center;">
+      {% include 'alerts.html' %}
+  </div>
+</section>

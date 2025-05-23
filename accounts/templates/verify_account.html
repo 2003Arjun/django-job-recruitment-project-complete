@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %} | Verify Account {% endblock %}
+
+{% block content %}
+<div class="auth-content">
+    <div class="auth-container">
+
+        <!-- Alerts -->
+        {% include 'alerts.html' %}
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2><span class="header-icon">&#128274;</span> Verify Account</h2>
+            </div>
+            <form action="{% url 'verify_account' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="code" class="form-label">Verification Code</label>
+                    <input type="hidden" name="email" value="{{ email }}">
+                    <input type="text" name="code" id="code" class="form-control"
+                        placeholder="Enter your verification code" required>
+                </div>
+                <button type="submit" class="btn">Verify</button>
+            </form>
+            <p class="form-group">
+                <a href="" style="color: #1e3a64;">Back to Registration</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

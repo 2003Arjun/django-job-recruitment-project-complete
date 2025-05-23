@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %} My Jobs {% endblock %}
+
+{% block content %}
+
+{% include 'header.html' %}
+
+<div class="container">
+    <h2 style="text-align: center; color: #3a86ff; margin: 30px 0 20px; font-size: 28px; font-weight: 700;">My Job Listings</h2>
+    
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Job Title</th>
+                    <th scope="col">Company Name</th>
+                    <th scope="col">Date Posted</th>
+                    <th scope="col">Deadline</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Applicants</th>
+                    <th scope="col" colspan="4">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if my_jobs %}
+                {% for job in my_jobs %}
+                <tr>
+                    <td>{{ job.title }}</td>
+                    <td>{{ job.company_name }}</td>
+                    <td>{{ job.created_at|date:"M d, Y" }}</td>
+                    <td>{{ job.deadline|date:"M d, Y" }}</td>
+                    <td>
+                        {% if job.deadline >= current_date %}
+                        <span style="display: inline-block; padding: 5px 10px; border-radius: 20px; background-color: #06d6a0; color: white; font-size: 12px; font-weight: 600;">Active</span>
+                        {% else %}
+                        <span style="display: inline-block; padding: 5px 10px; border-radius: 20px; background-color: #ef476f; color: white; font-size: 12px; font-weight: 600;">Closed</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span style="font-weight: 600;">{{ job.total_applicants }}</span>
+                    </td>
+                    <td>
+                        <a href="{% url 'advert_applications' job.id %}" class="small-btn" style="background-color: #3a86ff;">
+                            View Applicants
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'job_advert' job.id %}" class="small-btn" style="background-color: #8338ec;">
+                            View Job
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'update_advert' job.id %}" class="small-btn" style="background-color: #ffd166; color: #212529;">
+                            Edit
+                        </a>
+                    </td>
+                    <td>
+                        <form method='POST' action="{% url 'delete_advert' job.id %}" onsubmit="return confirm('Are you sure you want to delete this job listing?');">
+                            {% csrf_token %}
+                            <button type="submit" class='small-btn' style="background-color: #ef476f;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="10" style="text-align: center; padding: 30px;">
+                        <p style="margin-bottom: 10px; font-size: 16px;">You haven't posted any job listings yet.</p>
+                        <a href="{% url 'create_advert' %}" style="color: #3a86ff; text-decoration: none; font-weight: 600;">Create your first job listing</a>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<section class="container">
+    <div class="pagination">
+        <div class="step-links">
+            {% if my_jobs.has_previous %}
+            <a class="pagination-link"
+                href="?page={{ my_jobs.previous_page_number }}{% if request.GET.keyword %}&keyword={{ request.GET.keyword }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">«
+                Previous</a>
+            {% else %}
+            <span class="pagination-disabled">« Previous</span>
+            {% endif %}
+
+            <span class="pagination-current">
+                Page {{ my_jobs.number }} of {{ my_jobs.paginator.num_pages }}
+            </span>
+
+            {% if my_jobs.has_next %}
+            <a class="pagination-link"
+                href="?page={{ my_jobs.next_page_number }}{% if request.GET.keyword %}&keyword={{ request.GET.keyword }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}">Next
+                »</a>
+            {% else %}
+            <span class="pagination-disabled">Next »</span>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+{% endblock %}
